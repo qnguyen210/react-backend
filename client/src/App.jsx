@@ -1,5 +1,5 @@
 // client/src/App.jsx
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
 
 import SignIn from "./pages/SignIn.jsx";
@@ -30,33 +30,32 @@ export default function App() {
 
   return (
     <div>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>{" | "}
-          <Link to="/contact">Contact</Link>{" | "}
-          <Link to="/education">Education</Link>{" | "}
-          <Link to="/project">Project</Link>{" | "}
-          {!user && <Link to="/signin">Sign In</Link>}
-          {!user && <Link to="/signup">Sign Up</Link>}
-          {user && (
-            <>
-              <button type="button" onClick={logout}>
-                Logout
-              </button>
-            </>
-          )}
-          {isAdmin && (
-            <>
-              {" | "}
-              <Link to="/admin/contacts">Manage Contacts</Link>{" | "}
-              <Link to="/admin/educations">Manage Educations</Link>{" | "}
-              <Link to="/admin/projects">Manage Projects</Link>
-            </>
-          )}
-        </nav>
-
+      <header className="site-header">
+        <div className="nav-bar container">
+          <div className="brand">
+            <NavLink to="/" end className="brand-link">MyPortfolio</NavLink>
+          </div>
+          <nav className="primary-nav">
+            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
+            <NavLink to="/education">Education</NavLink>
+            <NavLink to="/project">Project</NavLink>
+            {!user && <NavLink to="/signin">Sign In</NavLink>}
+            {!user && <NavLink to="/signup">Sign Up</NavLink>}
+            {user && (
+              <button type="button" onClick={logout} className="btn outline small">Logout</button>
+            )}
+            {isAdmin && (
+              <div className="admin-links">
+                <NavLink to="/admin/contacts">Contacts</NavLink>
+                <NavLink to="/admin/educations">Educations</NavLink>
+                <NavLink to="/admin/projects">Projects</NavLink>
+              </div>
+            )}
+          </nav>
+        </div>
         {user && (
-          <p>
+          <p className="signed-in-info">
             Signed in as: {user.email} ({user.role})
           </p>
         )}
@@ -64,7 +63,25 @@ export default function App() {
 
       <main>
         <Routes>
-          <Route path="/" element={<p>Welcome to my portfolio</p>} />
+          <Route
+            path="/"
+            element={
+              <section className="hero fade-in">
+                <div className="hero-inner container">
+                  <h1>
+                    <span className="gradient-text">Welcome</span> to my portfolio
+                  </h1>
+                  <p className="hero-tagline">Showcasing projects, education and ways to connect.</p>
+                  {!user && (
+                    <div className="hero-actions">
+                      <NavLink to="/signup" className="btn">Get Started</NavLink>
+                      <NavLink to="/signin" className="btn outline">Sign In</NavLink>
+                    </div>
+                  )}
+                </div>
+              </section>
+            }
+          />
 
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
