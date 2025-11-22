@@ -1,5 +1,7 @@
 import dotenv from 'dotenv'
-dotenv.config()
+// Load .env without verbose debug messages. If you need debug output later,
+// set { debug: true } or set DOTENV_DEBUG=1 in the environment.
+dotenv.config({ debug: false })
 
 const config = {
   env: process.env.NODE_ENV || 'development',

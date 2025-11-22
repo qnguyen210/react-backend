@@ -24,9 +24,11 @@ app.get('/', (req, res) => {
 })
 
 // connect to MongoDB and log result
+// Mongoose v6+ includes newer driver defaults; passing
+// useNewUrlParser/useUnifiedTopology is deprecated and unnecessary.
 mongoose.set('strictQuery', false)
 mongoose
-  .connect(config.mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(config.mongoUri)
   .then(() => {
     console.log('MongoDB connected:', config.mongoUri.split('@').pop()) // partial info for privacy
   })
