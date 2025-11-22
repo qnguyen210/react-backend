@@ -1,6 +1,4 @@
 import dotenv from 'dotenv'
-// Load .env without verbose debug messages. If you need debug output later,
-// set { debug: true } or set DOTENV_DEBUG=1 in the environment.
 dotenv.config({ debug: false })
 
 const config = {
