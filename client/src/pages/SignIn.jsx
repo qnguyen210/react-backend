@@ -16,10 +16,10 @@ export default function SignIn() {
     setError("");
 
     try {
-      const data = await apiRequest("/auth/signin", "POST", { email, password });
-      // adjust keys based on your backend response shape
-      login(data.token, data.user);
-      navigate("/");
+  const data = await apiRequest("/auth/signin", "POST", { email, password });
+  login(data.token, data.user);
+  // role-based redirect
+  navigate(data.user?.role === "admin" ? "/admin/contacts" : "/");
     } catch (err) {
       setError(err.message);
     }

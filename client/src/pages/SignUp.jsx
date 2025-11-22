@@ -1,16 +1,22 @@
+// client/src/pages/SignUp.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../api.js";
+import { useAuth } from "../AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
+  const { login } = useAuth();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
+    username: "",
     name: "",
     email: "",
     password: "",
   });
+
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,47 +25,90 @@ export default function SignUp() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setMessage("");
+    setLoading(true);
 
     try {
-      await apiRequest("/auth/signup", "POST", form);
-      setMessage("Signup successful. You can now sign in.");
-      navigate("/signin");
+      // IMPORTANT: this sends { username, name, email, password }
+      const data = await apiRequest("/auth/signup", "POST", form);
+
+      // If your backend returns { token, user }
+      login(data.token, data.user);
+      navigate(data.user?.role === "admin" ? "/admin/contacts" : "/");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
+    <form onSubmit={handleSubmit} style={{ maxWidth: 480 }}>
+      <h2>Create Account</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      <div>
-        <label>Name</label>
-        <input name="name" value={form.name} onChange={handleChange} required />
+
+      <div style={{ marginBottom: 8 }}>
+        <label>
+          Username
+          <br />
+          <input
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            required
+            style={{ width: "100%" }}
+          />
+        </label>
       </div>
-      <div>
-        <label>Email</label>
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+
+      <div style={{ marginBottom: 8 }}>
+        <label>
+          Name
+          <br />
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            style={{ width: "100%" }}
+          />
+        </label>
       </div>
-      <div>
-        <label>Password</label>
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+
+      <div style={{ marginBottom: 8 }}>
+        <label>
+          Email
+          <br />
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            style={{ width: "100%" }}
+          />
+        </label>
       </div>
-      <button type="submit">Sign Up</button>
+
+      <div style={{ marginBottom: 12 }}>
+        <label>
+          Password
+          <br />
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            minLength={6}
+            style={{ width: "100%" }}
+          />
+        </label>
+      </div>
+
+      <button type="submit" disabled={loading}>
+        {loading ? "Creating..." : "Sign Up"}
+      </button>
     </form>
   );
 }
+

@@ -1,5 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
+import cors from 'cors';
 import config from './config/config.js'
 import contactRoutes from "./server/routes/contact.routes.js";
 import userRoutes from "./server/routes/user.routes.js";
@@ -7,8 +8,12 @@ import educationRoutes from "./server/routes/education.routes.js";
 import projectRoutes from "./server/routes/project.routes.js";
 import authRoutes from "./server/routes/auth.routes.js"; // Import auth routes
 
-const app = express()
 
+
+const app = express()
+// allow requests from frontend (dev)
+// simplest for assignment:
+app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
