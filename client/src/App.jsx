@@ -1,81 +1,126 @@
-//import { useState } from 'react'
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
-import "./App.css";
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
-import AdminContactList from "./pages/AdminContactList";
-import AdminEducationList from "./pages/AdminEducationList";
-import AdminProjectList from "./pages/AdminProjectList";
+// client/src/App.jsx
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
 
-function Home() {
-  return (
-    <div>
-      <h1>Welcome to My Portfolio</h1>
-      <p>This is the starting page. Use the navigation to open admin pages.</p>
-    </div>
-  );
+import SignIn from "./pages/SignIn.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import ContactForm from "./pages/ContactForm.jsx";
+import EducationForm from "./pages/EducationForm.jsx";
+import ProjectForm from "./pages/ProjectForm.jsx";
+
+import AdminContactList from "./pages/AdminContactList.jsx";
+import AdminEducationList from "./pages/AdminEducationList.jsx";
+import AdminProjectList from "./pages/AdminProjectList.jsx";
+
+function PrivateRoute({ children }) {
+  const { token } = useAuth();
+  if (!token) return <Navigate to="/signin" replace />;
+  return children;
 }
 
-function App() {
-  const { isAdmin } = useAuth();
+function AdminRoute({ children }) {
+  const { token, isAdmin } = useAuth();
+  if (!token) return <Navigate to="/signin" replace />;
+  if (!isAdmin) return <p>You do not have access to this page.</p>;
+  return children;
+}
 
-  function ProtectedRoute({ children }) {
-    // only allow admin users to access admin pages
-    return isAdmin ? children : <Navigate to="/" replace />;
-  }
+export default function App() {
+  const { user, isAdmin, logout } = useAuth();
 
   return (
-    <BrowserRouter>
-      <nav style={{ padding: 10, borderBottom: "1px solid #ccc" }}>
-        <Link to="/" style={{ marginRight: 10 }}>
-          Home
-        </Link>
-        {isAdmin && (
-          <>
-            <Link to="/admin/contacts" style={{ marginRight: 10 }}>
-              Admin Contacts
-            </Link>
-            <Link to="/admin/education" style={{ marginRight: 10 }}>
-              Admin Education
-            </Link>
-            <Link to="/admin/projects">Admin Projects</Link>
-          </>
-        )}
-      </nav>
+    <div>
+      <header>
+        <nav>
+          <Link to="/">Home</Link>{" | "}
+          <Link to="/contact">Contact</Link>{" | "}
+          <Link to="/education">Education</Link>{" | "}
+          <Link to="/project">Project</Link>{" | "}
+          {!user && <Link to="/signin">Sign In</Link>}
+          {!user && <Link to="/signup">Sign Up</Link>}
+          {user && (
+            <>
+              <button type="button" onClick={logout}>
+                Logout
+              </button>
+            </>
+          )}
+          {isAdmin && (
+            <>
+              {" | "}
+              <Link to="/admin/contacts">Manage Contacts</Link>{" | "}
+              <Link to="/admin/educations">Manage Educations</Link>{" | "}
+              <Link to="/admin/projects">Manage Projects</Link>
+            </>
+          )}
+        </nav>
 
-      <main style={{ padding: 10 }}>
+        {user && (
+          <p>
+            Signed in as: {user.email} ({user.role})
+          </p>
+        )}
+      </header>
+
+      <main>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Navigate to="/admin/contacts" replace />} />
+          <Route path="/" element={<p>Welcome to my portfolio</p>} />
+
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+
           <Route
-            path="/admin/contacts"
+            path="/contact"
             element={
-              <ProtectedRoute>
-                <AdminContactList />
-              </ProtectedRoute>
+              <PrivateRoute>
+                <ContactForm />
+              </PrivateRoute>
             }
           />
           <Route
-            path="/admin/education"
+            path="/education"
             element={
-              <ProtectedRoute>
+              <PrivateRoute>
+                <EducationForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/project"
+            element={
+              <PrivateRoute>
+                <ProjectForm />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/contacts"
+            element={
+              <AdminRoute>
+                <AdminContactList />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/educations"
+            element={
+              <AdminRoute>
                 <AdminEducationList />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
             path="/admin/projects"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <AdminProjectList />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
         </Routes>
       </main>
-    </BrowserRouter>
+    </div>
   );
 }
 
-export default App;
