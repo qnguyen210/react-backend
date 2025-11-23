@@ -21,7 +21,7 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const contacts = await Contact.find().sort("-created");
+    const contacts = await Contact.find().sort("-createdAt");
     return res.json(contacts);
   } catch (err) {
     return res.status(400).json({ error: getErrorMessage(err) });

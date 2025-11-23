@@ -4,6 +4,12 @@ import crypto from 'crypto'
 
 
 const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    trim: true,
+    unique: true,         // unique username
+    sparse: true          // avoids index issues if old docs temporarily miss username
+  },
   name: {
     type: String,
     trim: true,
