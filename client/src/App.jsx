@@ -69,7 +69,7 @@ export default function App() {
               <section className="hero fade-in">
                 <div className="hero-inner container">
                   <h1>
-                    <span className="gradient-text">Welcome</span> to my portfolio
+                    <span className="gradient-text">Welcome</span> to Quinn Nguyen's portfolio
                   </h1>
                   <p className="hero-tagline">Showcasing projects, education and ways to connect.</p>
                   {!user && (
