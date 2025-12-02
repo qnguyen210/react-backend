@@ -52,7 +52,7 @@ app.use("/api", educationRoutes);
 app.use("/api", projectRoutes);
 app.use("/api", authRoutes);
 
-const port = config.port
+const port = process.env.PORT || 4000
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
